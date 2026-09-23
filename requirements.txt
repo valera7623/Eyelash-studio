@@ -1,0 +1,30 @@
+# Telegram
+aiogram==3.23.0
+aiohttp==3.10.10
+aiohttp-socks==0.9.0
+
+# Конфигурация
+python-dotenv==1.0.1
+pydantic==2.12.5
+pydantic-core==2.41.5
+pydantic-settings==2.8.0
+
+# БД (SQLite async; Postgres — позже, self-host на VPS РФ)
+sqlalchemy==2.0.41
+aiosqlite==0.20.0
+
+# Кэш / антиспам
+cachetools==5.5.2
+
+# QR для deep-link записи (t.me/bot?start=book_<slug>)
+qrcode[pil]==8.2
+
+# Тесты
+pytest==8.3.5
+pytest-asyncio==0.25.3
+
+# APScheduler: hold TTL, напоминания, бэкап SQLite
+APScheduler==3.10.4
+
+# FSM в проде (docker-compose.prod.yml)
+redis==5.2.1

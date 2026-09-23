@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studio-book — аренда зала для наращивания ресниц</title>
+  <meta name="description" content="Почасовая аренда зала для наращивания ресниц: запись в Telegram без жёсткого расписания, предоплата, чек 54-ФЗ. Подписка 490 ₽/мес.">
+  <link rel="canonical" href="https://studiobook.com.ru/">
+  <meta property="og:url" content="https://studiobook.com.ru/">
+  <meta property="og:title" content="Studio-book — аренда зала для наращивания ресниц">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f6efe4;
+      --muted: #c4b8a8;
+      --paper: rgba(22, 16, 14, 0.72);
+      --line: rgba(255, 214, 170, 0.18);
+      --amber: #f0b45a;
+      --magenta: #e25d9a;
+      --cyan: #5ad4e0;
+      --telegram: #2AABEE;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Manrope, system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 520px at 12% -10%, rgba(226, 93, 154, 0.28), transparent 55%),
+        radial-gradient(900px 480px at 92% 8%, rgba(240, 180, 90, 0.34), transparent 50%),
+        radial-gradient(700px 420px at 70% 88%, rgba(90, 212, 224, 0.16), transparent 55%),
+        linear-gradient(180deg, #1a1010 0%, #0c090b 42%, #120c16 100%);
+      line-height: 1.55;
+    }
+    .stage {
+      position: relative;
+      overflow: hidden;
+    }
+    .cyc {
+      pointer-events: none;
+      position: absolute;
+      inset: auto -12% -28% -12%;
+      height: 42vh;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.14), transparent 58%),
+        linear-gradient(180deg, transparent, rgba(8,6,8,0.9));
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 52rem;
+      margin: 0 auto;
+      padding: 1.1rem 1.15rem 3.4rem;
+    }
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.2rem;
+      font-size: .92rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .mark {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: .55rem;
+      background:
+        linear-gradient(145deg, var(--amber), var(--magenta) 62%, var(--cyan));
+      box-shadow: 0 0 24px rgba(240, 180, 90, .45);
+    }
+    .nav-links { display: flex; flex-wrap: wrap; gap: .75rem 1rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--amber); }
+    h1 {
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(2rem, 6vw, 3.35rem);
+      line-height: 1.12;
+      margin: 0 0 .9rem;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    h1 em {
+      font-style: italic;
+      background: linear-gradient(90deg, var(--amber), #ffd9a0 40%, var(--magenta));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    h2 {
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: 1.55rem;
+      margin: 0 0 .7rem;
+    }
+    h3 { font-size: 1.05rem; margin: 1.4rem 0 .55rem; color: #ffe7c4; }
+    p, li { font-size: 1.02rem; }
+    a { color: var(--amber); }
+    .kicker {
+      display: inline-block;
+      margin-bottom: .85rem;
+      padding: .28rem .7rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--amber);
+      font-size: .78rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .lead { font-size: 1.12rem; color: #f3e7d6; max-width: 40rem; }
+    .muted { color: var(--muted); font-size: .95rem; }
+    .hero { padding: .2rem 0 1.4rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; margin: 1.3rem 0 .4rem; }
+    a.btn {
+      display: inline-block;
+      background: linear-gradient(180deg, #4ec4f5, var(--telegram));
+      color: #fff;
+      text-decoration: none;
+      padding: .85rem 1.35rem;
+      border-radius: 999px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(42, 171, 238, .28);
+    }
+    a.btn.ghost {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      box-shadow: none;
+    }
+    .pills { display: flex; flex-wrap: wrap; gap: .55rem; margin: 1.4rem 0 0; }
+    .pill {
+      padding: .45rem .8rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      font-size: .88rem;
+    }
+    .pill b { color: var(--amber); font-weight: 700; }
+    section.card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 1.15rem;
+      padding: 1.25rem 1.2rem 1.3rem;
+      margin: 1.15rem 0;
+      backdrop-filter: blur(10px);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+      gap: .8rem;
+      margin: 1rem 0 0;
+    }
+    .tile {
+      padding: .95rem .9rem;
+      border-radius: .9rem;
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--line);
+    }
+    .tile span {
+      display: block;
+      color: var(--magenta);
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: .35rem;
+    }
+    ol.steps { padding-left: 1.15rem; }
+    ol.steps li { margin: .4rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: .75rem 0 1rem;
+      font-size: .95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: .6rem .7rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: rgba(240, 180, 90, .12); color: #ffe7c4; }
+    td.price { white-space: nowrap; font-weight: 700; color: var(--amber); }
+    .note {
+      background: rgba(226, 93, 154, .1);
+      border: 1px solid rgba(226, 93, 154, .28);
+      border-radius: .8rem;
+      padding: .85rem 1rem;
+      margin: 1rem 0 0;
+    }
+    footer {
+      margin-top: 1.6rem;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--line);
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    @media (max-width: 640px) {
+      .wrap { padding: 1rem .9rem 2.6rem; }
+      nav { align-items: flex-start; }
+      a.btn { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="cyc" aria-hidden="true"></div>
+    <div class="wrap">
+      <nav>
+        <a class="brand" href="/"><span class="mark" aria-hidden="true"></span>Studio-book</a>
+        <div class="nav-links">
+          <a href="/#prices">Цены</a>
+          <a href="/#contacts">Контакты</a>
+          <a href="/offer">Оферта</a>
+        </div>
+      </nav>
+
+      <header class="hero">
+        <p class="kicker">почасовая аренда зала для наращивания ресниц</p>
+        <h1>Мастер открывает окно — <em>клиент занимает слот</em></h1>
+        <p class="lead">Владелец создаёт студию и зал, открывает окна на нужные дни. Клиент записывается по ссылке: внутри окна — сразу, вне окна — заявка. Это не CRM.</p>
+        <div class="actions">
+          <a class="btn" href="{{BOT_LINK}}">Открыть Telegram-бота</a>
+          <a class="btn ghost" href="/#prices">Смотреть прайс</a>
+        </div>
+        <p class="muted">Бот: <a href="{{BOT_LINK}}">t.me/{{BOT_USERNAME}}</a></p>
+        <div class="pills">
+          <span class="pill"><b>Зал</b> · кабинет</span>
+          <span class="pill"><b>Окна</b> · без недельного графика</span>
+          <span class="pill"><b>Заявки</b> · своё время</span>
+        </div>
+      </header>
+
+      <section class="card">
+        <h2>Чем занимаемся</h2>
+        <p>Принимаем оплату за <strong>почасовую аренду зала для наращивания ресниц</strong> и за <strong>доступ студии к боту записи</strong>. Услуга оказывается офлайн: клиент приходит в зал в оплаченный интервал. Онлайн — только запись, предоплата и напоминания. Жёсткого расписания нет: владелец открывает окна на конкретные дни.</p>
+        <div class="grid">
+          <div class="tile"><span>01</span>Запись: дата → длительность → слот в окне или заявка на своё время.</div>
+          <div class="tile"><span>02</span>Неоплаченный слот сгорает (от 20 минут до 24 часов — правило студии).</div>
+          <div class="tile"><span>03</span>Напоминание клиенту и студии за 24 часа и за 2 часа.</div>
+          <div class="tile"><span>04</span>Отмена в боте: полный возврат, если до слота не меньше срока студии (24 / 72 / 120 ч).</div>
+        </div>
+      </section>
+
+      <section class="card" id="prices">
+        <h2>Стоимость услуг</h2>
+        <p>Цены ниже — публичный прайс. Счёт выставляется в боте; оплату принимает ЮKassa или Prodamus.</p>
+
+        <h3>1. Предоплата аренды зала (платит клиент / фотограф)</h3>
+        <p class="muted">Стоимость часа студия указывает в боте. Если студия не задала свою сетку, действуют тарифы пилота:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Услуга</th>
+              <th>Объём</th>
+              <th>Цена</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Аренда зала, будни 10:00–22:00</td>
+              <td>1 час</td>
+              <td class="price">2&nbsp;000 ₽</td>
+            </tr>
+            <tr>
+              <td>Аренда зала, выходные</td>
+              <td>1 час</td>
+              <td class="price">2&nbsp;400 ₽</td>
+            </tr>
+            <tr>
+              <td>Аренда зала, ночь с 22:00</td>
+              <td>1 час</td>
+              <td class="price">3&nbsp;000 ₽</td>
+            </tr>
+            <tr>
+              <td>Аренда зала от 2 часов (пакет)</td>
+              <td>2 часа, будни</td>
+              <td class="price">4&nbsp;000 ₽</td>
+            </tr>
+            <tr>
+              <td>Одиночный час, если минимум студии — 2 часа</td>
+              <td>1 час, наценка 50%</td>
+              <td class="price">3&nbsp;000 ₽</td>
+            </tr>
+            <tr>
+              <td>Предоплата брони</td>
+              <td>50% или 100% от стоимости интервала</td>
+              <td class="price">от 1&nbsp;000 ₽</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>2. Подписка студии на бот записи (платит владелец)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Тариф</th>
+              <th>Что входит</th>
+              <th>Цена</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Free</td>
+              <td>1 зал, {{FREE_BOOKINGS_PER_MONTH}} записей в месяц</td>
+              <td class="price">0 ₽</td>
+            </tr>
+            <tr>
+              <td>Старт</td>
+              <td>1 зал, записи без лимита</td>
+              <td class="price">{{TARIFF_STARTER_RUB}} ₽ / 30 дней</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="muted">Комиссию эквайринга платит плательщик по тарифу кассы. Процент с оборота студии мы не берём.</p>
+      </section>
+
+      <section class="card">
+        <h2>Как оплатить</h2>
+        <ol class="steps">
+          <li>Откройте бота <a href="{{BOT_LINK}}">t.me/{{BOT_USERNAME}}</a>.</li>
+          <li>Клиент: ссылка записи студии → слот → оплата картой / СБП по счёту ЮKassa или Prodamus.</li>
+          <li>Владелец: команда /studio → «Тариф» → Старт.</li>
+        </ol>
+        <div class="note">
+          Возврат при отмене студией — полная сумма предоплаты. При отмене клиентом позже срока студии удерживается доля предоплаты как обеспечительный платёж за простой зала (по умолчанию 50% при отмене менее чем за 72 часа). Чек на возврат — через ту же кассу.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Документы и данные</h2>
+        <p>Персональные данные обрабатываются на сервере в РФ (152-ФЗ). Согласие на обработку клиент подтверждает в боте отдельным шагом. Публичная оферта: <a href="/offer">studiobook.com.ru/offer</a>.</p>
+        <p>Оплата — ЮKassa или Prodamus. Мы не принимаем оплату «переводом на карту» через этот сайт.</p>
+      </section>
+
+      <section class="card" id="contacts">
+        <h2>Продавец и интернет-ресурсы</h2>
+        <p>Сайт продавца (единственная витрина в интернете, кроме Telegram): <a href="https://studiobook.com.ru/">https://studiobook.com.ru</a></p>
+        <ul>
+          <li>Лендинг и прайс: <a href="https://studiobook.com.ru/">https://studiobook.com.ru/</a></li>
+          <li>Публичная оферта: <a href="https://studiobook.com.ru/offer">https://studiobook.com.ru/offer</a> · <a href="https://studiobook.com.ru/offer.pdf">PDF</a></li>
+          <li>Telegram-бот записи и оплаты: <a href="{{BOT_LINK}}">https://t.me/{{BOT_USERNAME}}</a></li>
+        </ul>
+        <p class="muted">Страниц во ВКонтакте, Instagram и других соцсетях нет — покупатели приходят с этого сайта и из бота.</p>
+        <p>
+          Самозанятый <strong>Попов Валерий Михайлович</strong><br>
+          ИНН 220910861433<br>
+          658206, Алтайский край, г. Рубцовск, Перекопский пер., д. 33<br>
+          E-mail: <a href="mailto:valera7623@gmail.com">valera7623@gmail.com</a>
+        </p>
+      </section>
+
+      <footer>
+        <p><strong>Контакт:</strong> <a href="mailto:valera7623@gmail.com">valera7623@gmail.com</a> · Telegram <a href="{{BOT_LINK}}">@{{BOT_USERNAME}}</a></p>
+        <p><a href="/offer">Публичная оферта</a> · Studio-book · почасовая аренда фотозала · запись и предоплата в Telegram</p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
