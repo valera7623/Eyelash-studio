@@ -230,7 +230,7 @@ def test_owner_cheat_sheet_covers_buttons():
     assert "Брони" not in text
     assert "Открыть окно" in text
     assert "Заявки" in text
-    assert "Сетка цен" in text
+    assert "Сетка цен" not in text
     assert "iCal" not in text
     assert "Плюс" not in text
     assert len(text) < 3500
@@ -245,7 +245,6 @@ def test_owner_cheat_sheet_covers_buttons():
         "ow:link",
         "ow:win",
         "ow:wins",
-        "ow:grid",
         "ow:tariff",
     ]
 

@@ -34,7 +34,6 @@ def owner_cabinet_keyboard() -> InlineKeyboardMarkup:
     builder.button(text="🔗 Ссылка записи", callback_data="ow:link")
     builder.button(text="🟢 Открыть окно", callback_data="ow:win")
     builder.button(text="🪟 Открытые окна", callback_data="ow:wins")
-    builder.button(text="📐 Сетка цен", callback_data="ow:grid")
     builder.button(text="💳 Тариф", callback_data="ow:tariff")
     builder.adjust(2)
     return builder.as_markup()
