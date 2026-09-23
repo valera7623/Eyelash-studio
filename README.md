@@ -40,3 +40,13 @@ python -m src.main
 Тесты: `pytest`
 
 Docker: `docker compose up -d --build`. База: `data/eyelash.db`.
+
+## Деплой
+
+Прод: VPS `185.106.95.16`, каталог `/home/valera/eyelash-studio`, HTTP `:8089`, Redis `:6380` (studio-book занимает `:8088` / `:6379`).
+
+Автодеплой: push в `main` репозитория [valera7623/Eyelash-studio](https://github.com/valera7623/Eyelash-studio) → GitHub Actions собирает образ `ghcr.io/valera7623/eyelash-studio` и перезапускает контейнер. Вручную: Actions → Deploy eyelash-studio to VPS → Run workflow.
+
+Секреты репозитория: `VPS_HOST`, `VPS_USERNAME`, `VPS_SSH_KEY`, `BOT_TOKEN`.
+
+Локально на VPS без Actions: `./scripts/deploy-vps.sh`.
