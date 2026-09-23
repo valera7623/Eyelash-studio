@@ -150,42 +150,25 @@ async def cb_cabinet(callback: CallbackQuery, session: AsyncSession, user: User,
 
 
 @router.message(OwnerStates.waiting_studio_name, _NOT_COMMAND)
-async def owner_studio_name(message: Message, state: FSMContext):
-    name = (message.text or "").strip()
-    if len(name) < 2:
-        await message.answer("Название слишком короткое.")
-        return
-    await state.update_data(studio_name=name)
-    await state.set_state(OwnerStates.waiting_resource_name)
-    await message.answer("Название зала? Например: Кабинет 1. Или «Зал».")
-
-
-@router.message(OwnerStates.waiting_resource_name, _NOT_COMMAND)
-async def owner_resource_name(message: Message, state: FSMContext):
-    name = (message.text or "").strip() or "Зал"
-    await state.update_data(resource_name=name)
-    await state.set_state(OwnerStates.waiting_price)
-    await message.answer("Цена часа в рублях (число). 0 — пока без предоплаты.")
-
-
-@router.message(OwnerStates.waiting_price, _NOT_COMMAND)
-async def owner_price(
+async def owner_studio_name(
     message: Message,
     session: AsyncSession,
     user: User,
     state: FSMContext,
     bot: Bot,
 ):
-    raw = (message.text or "").strip().replace(" ", "")
-    if not raw.isdigit():
-        await message.answer("Введите целое число рублей.")
+    name = (message.text or "").strip()
+    if len(name) < 2:
+        await message.answer("Название слишком короткое.")
         return
-    price = int(raw)
-    data = await state.get_data()
-    slug = await unique_slug(session, data["studio_name"])
+    if await get_owner_studio(session, user):
+        await state.clear()
+        await show_cabinet(message, session, user)
+        return
+    slug = await unique_slug(session, name)
     studio = Studio(
         slug=slug,
-        name=data["studio_name"],
+        name=name,
         owner_id=user.id,
         owner_telegram_id=user.telegram_id,
         timezone="Europe/Moscow",
@@ -197,17 +180,18 @@ async def owner_price(
     )
     session.add(studio)
     await session.flush()
-    resource = Resource(
-        studio_id=studio.id,
-        name=data["resource_name"],
-        duration_min=60,
-        slot_step_min=60,
-        min_duration_min=60,
-        buffer_min=5,
-        timezone="Europe/Moscow",
-        price_rub=price,
+    session.add(
+        Resource(
+            studio_id=studio.id,
+            name="Зал",
+            duration_min=60,
+            slot_step_min=60,
+            min_duration_min=60,
+            buffer_min=5,
+            timezone="Europe/Moscow",
+            price_rub=0,
+        )
     )
-    session.add(resource)
     await session.commit()
     await state.clear()
     await message.answer(
