@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Studio-book — аренда зала для наращивания ресниц</title>
-  <meta name="description" content="Почасовая аренда зала для наращивания ресниц: запись в Telegram без жёсткого расписания, предоплата, чек 54-ФЗ. Подписка 490 ₽/мес.">
-  <link rel="canonical" href="https://studiobook.com.ru/">
-  <meta property="og:url" content="https://studiobook.com.ru/">
-  <meta property="og:title" content="Studio-book — аренда зала для наращивания ресниц">
+  <title>Lash-book — запись в зал для наращивания ресниц</title>
+  <meta name="description" content="Почасовая аренда зала для наращивания ресниц: мастер открывает окно, клиент записывается в Telegram. Предоплата, чек 54-ФЗ. Подписка 490 ₽/мес.">
+  <link rel="canonical" href="{{SITE_URL}}/">
+  <meta property="og:url" content="{{SITE_URL}}/">
+  <meta property="og:title" content="Lash-book — запись в зал для наращивания ресниц">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -220,8 +220,9 @@
     <div class="cyc" aria-hidden="true"></div>
     <div class="wrap">
       <nav>
-        <a class="brand" href="/"><span class="mark" aria-hidden="true"></span>Studio-book</a>
+        <a class="brand" href="/"><span class="mark" aria-hidden="true"></span>Lash-book</a>
         <div class="nav-links">
+          <a href="/#how">Как это работает</a>
           <a href="/#prices">Цены</a>
           <a href="/#contacts">Контакты</a>
           <a href="/offer">Оферта</a>
@@ -231,27 +232,35 @@
       <header class="hero">
         <p class="kicker">почасовая аренда зала для наращивания ресниц</p>
         <h1>Мастер открывает окно — <em>клиент занимает слот</em></h1>
-        <p class="lead">Владелец создаёт студию и зал, открывает окна на нужные дни. Клиент записывается по ссылке: внутри окна — сразу, вне окна — заявка. Это не CRM.</p>
+        <p class="lead">Кабинет для мастера-одиночки: один зал, без недельного графика. Клиенты записываются по ссылке. Внутри окна слот закрепляется сразу, вне окна приходит заявка.</p>
         <div class="actions">
           <a class="btn" href="{{BOT_LINK}}">Открыть Telegram-бота</a>
           <a class="btn ghost" href="/#prices">Смотреть прайс</a>
         </div>
         <p class="muted">Бот: <a href="{{BOT_LINK}}">t.me/{{BOT_USERNAME}}</a></p>
         <div class="pills">
-          <span class="pill"><b>Зал</b> · кабинет</span>
-          <span class="pill"><b>Окна</b> · без недельного графика</span>
+          <span class="pill"><b>1 зал</b> · один мастер</span>
+          <span class="pill"><b>Окна</b> · без жёсткого расписания</span>
           <span class="pill"><b>Заявки</b> · своё время</span>
         </div>
       </header>
 
-      <section class="card">
-        <h2>Чем занимаемся</h2>
-        <p>Принимаем оплату за <strong>почасовую аренду зала для наращивания ресниц</strong> и за <strong>доступ студии к боту записи</strong>. Услуга оказывается офлайн: клиент приходит в зал в оплаченный интервал. Онлайн — только запись, предоплата и напоминания. Жёсткого расписания нет: владелец открывает окна на конкретные дни.</p>
+      <section class="card" id="how">
+        <h2>Как это работает</h2>
+        <p>Принимаем оплату за <strong>почасовую аренду зала для наращивания ресниц</strong> и за <strong>доступ мастера к боту записи</strong>. Услуга офлайн: клиент приходит в зал в выбранный интервал. Онлайн — запись, предоплата и напоминания.</p>
         <div class="grid">
-          <div class="tile"><span>01</span>Запись: дата → длительность → слот в окне или заявка на своё время.</div>
-          <div class="tile"><span>02</span>Неоплаченный слот сгорает (от 20 минут до 24 часов — правило студии).</div>
-          <div class="tile"><span>03</span>Напоминание клиенту и студии за 24 часа и за 2 часа.</div>
-          <div class="tile"><span>04</span>Отмена в боте: полный возврат, если до слота не меньше срока студии (24 / 72 / 120 ч).</div>
+          <div class="tile"><span>01</span>Мастер создаёт студию и зал, указывает цену часа.</div>
+          <div class="tile"><span>02</span>Открывает окно на день: «25.09 12:00 18:00».</div>
+          <div class="tile"><span>03</span>Клиент по ссылке выбирает дату и слот внутри окна — или оставляет заявку на своё время.</div>
+          <div class="tile"><span>04</span>Напоминание за сутки и за 2 часа. Отмена — в боте командой /my.</div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Кому какой вход</h2>
+        <div class="grid">
+          <div class="tile"><span>Мастер</span>/studio — кабинет: окна, заявки, ссылка и QR, тариф. Один зал.</div>
+          <div class="tile"><span>Клиент</span>t.me/бот?start=slug — зал → дата → длительность → слот или заявка.</div>
         </div>
       </section>
 
@@ -259,8 +268,8 @@
         <h2>Стоимость услуг</h2>
         <p>Цены ниже — публичный прайс. Счёт выставляется в боте; оплату принимает ЮKassa или Prodamus.</p>
 
-        <h3>1. Предоплата аренды зала (платит клиент / фотограф)</h3>
-        <p class="muted">Стоимость часа студия указывает в боте. Если студия не задала свою сетку, действуют тарифы пилота:</p>
+        <h3>1. Предоплата аренды зала (платит клиент)</h3>
+        <p class="muted">Стоимость часа мастер указывает при создании зала. Если своя цена не задана, действуют тарифы пилота:</p>
         <table>
           <thead>
             <tr>
@@ -291,7 +300,7 @@
               <td class="price">4&nbsp;000 ₽</td>
             </tr>
             <tr>
-              <td>Одиночный час, если минимум студии — 2 часа</td>
+              <td>Одиночный час, если минимум зала — 2 часа</td>
               <td>1 час, наценка 50%</td>
               <td class="price">3&nbsp;000 ₽</td>
             </tr>
@@ -303,7 +312,7 @@
           </tbody>
         </table>
 
-        <h3>2. Подписка студии на бот записи (платит владелец)</h3>
+        <h3>2. Подписка мастера на бот записи (платит владелец зала)</h3>
         <table>
           <thead>
             <tr>
@@ -325,33 +334,33 @@
             </tr>
           </tbody>
         </table>
-        <p class="muted">Комиссию эквайринга платит плательщик по тарифу кассы. Процент с оборота студии мы не берём.</p>
+        <p class="muted">Везде один зал. Комиссию эквайринга платит плательщик по тарифу кассы. Процент с оборота зала мы не берём.</p>
       </section>
 
       <section class="card">
         <h2>Как оплатить</h2>
         <ol class="steps">
           <li>Откройте бота <a href="{{BOT_LINK}}">t.me/{{BOT_USERNAME}}</a>.</li>
-          <li>Клиент: ссылка записи студии → слот → оплата картой / СБП по счёту ЮKassa или Prodamus.</li>
-          <li>Владелец: команда /studio → «Тариф» → Старт.</li>
+          <li>Клиент: ссылка записи мастера → слот в окне или заявка → оплата картой / СБП по счёту ЮKassa или Prodamus.</li>
+          <li>Мастер: команда /studio → «Тариф» → Старт.</li>
         </ol>
         <div class="note">
-          Возврат при отмене студией — полная сумма предоплаты. При отмене клиентом позже срока студии удерживается доля предоплаты как обеспечительный платёж за простой зала (по умолчанию 50% при отмене менее чем за 72 часа). Чек на возврат — через ту же кассу.
+          Возврат при отмене мастером — полная сумма предоплаты. При отмене клиентом позже срока зала удерживается доля предоплаты как обеспечительный платёж за простой (по умолчанию 50% при отмене менее чем за 72 часа). Чек на возврат — через ту же кассу.
         </div>
       </section>
 
       <section class="card">
         <h2>Документы и данные</h2>
-        <p>Персональные данные обрабатываются на сервере в РФ (152-ФЗ). Согласие на обработку клиент подтверждает в боте отдельным шагом. Публичная оферта: <a href="/offer">studiobook.com.ru/offer</a>.</p>
+        <p>Персональные данные обрабатываются на сервере в РФ (152-ФЗ). Согласие на обработку клиент подтверждает в боте отдельным шагом. Публичная оферта: <a href="/offer">{{SITE_HOST}}/offer</a>.</p>
         <p>Оплата — ЮKassa или Prodamus. Мы не принимаем оплату «переводом на карту» через этот сайт.</p>
       </section>
 
       <section class="card" id="contacts">
         <h2>Продавец и интернет-ресурсы</h2>
-        <p>Сайт продавца (единственная витрина в интернете, кроме Telegram): <a href="https://studiobook.com.ru/">https://studiobook.com.ru</a></p>
+        <p>Сайт продавца (единственная витрина в интернете, кроме Telegram): <a href="{{SITE_URL}}/">{{SITE_HOST}}</a></p>
         <ul>
-          <li>Лендинг и прайс: <a href="https://studiobook.com.ru/">https://studiobook.com.ru/</a></li>
-          <li>Публичная оферта: <a href="https://studiobook.com.ru/offer">https://studiobook.com.ru/offer</a> · <a href="https://studiobook.com.ru/offer.pdf">PDF</a></li>
+          <li>Лендинг и прайс: <a href="{{SITE_URL}}/">{{SITE_HOST}}</a></li>
+          <li>Публичная оферта: <a href="/offer">/offer</a> · <a href="/offer.pdf">PDF</a></li>
           <li>Telegram-бот записи и оплаты: <a href="{{BOT_LINK}}">https://t.me/{{BOT_USERNAME}}</a></li>
         </ul>
         <p class="muted">Страниц во ВКонтакте, Instagram и других соцсетях нет — покупатели приходят с этого сайта и из бота.</p>
@@ -365,7 +374,7 @@
 
       <footer>
         <p><strong>Контакт:</strong> <a href="mailto:valera7623@gmail.com">valera7623@gmail.com</a> · Telegram <a href="{{BOT_LINK}}">@{{BOT_USERNAME}}</a></p>
-        <p><a href="/offer">Публичная оферта</a> · Studio-book · почасовая аренда фотозала · запись и предоплата в Telegram</p>
+        <p><a href="/offer">Публичная оферта</a> · Lash-book · почасовая аренда зала для наращивания ресниц · запись в Telegram</p>
       </footer>
     </div>
   </div>

@@ -32,7 +32,7 @@ def _form_to_dict(data: dict) -> dict:
     return {str(k): (v[0] if isinstance(v, list) and v else v) for k, v in data.items()}
 
 
-DEFAULT_BOT_USERNAME = "Studio_book_bot"
+DEFAULT_BOT_USERNAME = "eyelashstudiobot"
 
 
 def _landing_username(request: web.Request | None = None) -> str:
@@ -44,14 +44,27 @@ def _landing_username(request: web.Request | None = None) -> str:
     return configured or DEFAULT_BOT_USERNAME
 
 
+def _site_url() -> str:
+    return (settings.PUBLIC_BASE_URL or "").strip().rstrip("/")
+
+
+def _site_host() -> str:
+    site = _site_url()
+    if not site:
+        return "этот сайт"
+    return site.split("://", 1)[-1]
+
+
 def _render_landing(path: Path, bot_username: str | None = None) -> str:
-    html = path.read_text(encoding="utf-8") if path.exists() else "<p>studio-book</p>"
+    html = path.read_text(encoding="utf-8") if path.exists() else "<p>lash-book</p>"
     username = (bot_username or DEFAULT_BOT_USERNAME).strip().lstrip("@") or DEFAULT_BOT_USERNAME
     html = html.replace("{{BOT_USERNAME}}", username)
     html = html.replace("{{BOT_LINK}}", f"https://t.me/{username}")
     html = html.replace("{{TARIFF_STARTER_RUB}}", str(settings.TARIFF_STARTER_RUB))
     html = html.replace("{{TARIFF_PLUS_RUB}}", str(settings.TARIFF_PLUS_RUB))
     html = html.replace("{{FREE_BOOKINGS_PER_MONTH}}", str(settings.FREE_BOOKINGS_PER_MONTH))
+    html = html.replace("{{SITE_URL}}", _site_url())
+    html = html.replace("{{SITE_HOST}}", _site_host())
     return html
 
 

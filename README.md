@@ -39,6 +39,8 @@ python -m src.main
 
 Тесты: `pytest`
 
+Публичный лендинг (как у tele-bot-2): `/` — прайс, оферта, кнопка в бота. HTTP `:8089` на VPS.
+
 Docker: `docker compose up -d --build`. База: `data/eyelash.db`.
 
 ## Деплой

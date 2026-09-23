@@ -81,6 +81,8 @@ def test_landing_lists_service_prices():
     assert "{{TARIFF_STARTER_RUB}}" in html
     assert "2&nbsp;000" in html
     assert "id=\"prices\"" in html
+    assert "Lash-book" in html
+    assert "фотозал" not in html
 
 
 async def test_landing_http_substitutes_tariffs(engine):
@@ -96,10 +98,13 @@ async def test_landing_http_substitutes_tariffs(engine):
         assert "490" in text
         assert "1 зал, 10 записей в месяц" in text
         assert "Плюс" not in text
+        assert "фотозал" not in text
+        assert "фотограф" not in text
+        assert "Lash-book" in text
+        assert "наращивания ресниц" in text
         assert "2\xa0000" in text or "2&nbsp;000" in text
         assert "Стоимость услуг" in text
         assert "220910861433" in text
-        assert "https://studiobook.com.ru/" in text
         from src.config import settings
         from src.web.app import DEFAULT_BOT_USERNAME
 
@@ -112,7 +117,6 @@ async def test_landing_http_substitutes_tariffs(engine):
         offer_text = await offer.text()
         assert "Публичная оферта" in offer_text
         assert "220910861433" in offer_text
-        assert "studiobook.com.ru" in offer_text
         pdf = await client.get("/offer.pdf")
         assert pdf.status == 200
         assert "pdf" in (pdf.headers.get("Content-Type") or "").lower()

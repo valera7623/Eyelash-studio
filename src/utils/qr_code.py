@@ -31,8 +31,8 @@ def build_bot_deep_link(bot_username: str, payload: str) -> str:
 def studio_start_link(slug: str, bot_username: str | None = None) -> str:
     from src.config import settings
 
-    username = (bot_username or settings.BOT_USERNAME or "Studio_book_bot").lstrip("@").strip()
-    username = username or "Studio_book_bot"
+    username = (bot_username or settings.BOT_USERNAME or "eyelashstudiobot").lstrip("@").strip()
+    username = username or "eyelashstudiobot"
     payload = slug if is_valid_start_payload(slug) else f"book_{slug}"[:64]
     return build_bot_deep_link(username, payload)
 
