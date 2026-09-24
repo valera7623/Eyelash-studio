@@ -225,9 +225,15 @@ def test_booking_summary_hold_status():
         prepay_amount_rub=1000,
     )
     text = booking_summary(booking, studio, resource)
-    assert "Не оплачено" in text
+    assert "ожидает подтверждения" in text
+    assert "Оплачено" not in text
+    assert "Не оплачено" not in text
     booking.status = STATUS_PAID
-    assert "Оплачено" in booking_summary(booking, studio, resource)
+    paid = booking_summary(booking, studio, resource)
+    assert "Запись подтверждена" in paid
+    assert "Оплачено" not in paid
+    assert "Визит" in paid
+    assert "Длительность" in paid
 
 
 def test_redact_phone():

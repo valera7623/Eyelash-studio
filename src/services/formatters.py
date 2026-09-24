@@ -4,7 +4,6 @@ from zoneinfo import ZoneInfo
 
 from src.database.models.booking import STATUS_HOLD, STATUS_PAID, Booking
 from src.database.models.studio import Resource, Studio
-from src.services.slots import shoot_minutes
 
 
 WEEKDAYS_RU = ("пн", "вт", "ср", "чт", "пт", "сб", "вс")
@@ -29,33 +28,25 @@ def format_interval_local(starts_at: datetime, ends_at: datetime, tz_name: str) 
 
 def booking_summary(booking: Booking, studio: Studio, resource: Resource) -> str:
     tz = resource.timezone or studio.timezone
-    when = format_interval_local(booking.starts_at, booking.ends_at, tz)
+    visit_at = format_slot_local(booking.starts_at, tz)
     duration = int((booking.ends_at - booking.starts_at).total_seconds() // 60) or 60
-    shoot = shoot_minutes(resource, duration)
-    buffer = int(resource.buffer_min or 0)
-    studio_hour = ""
-    if buffer:
-        studio_hour = f"\n⏱ Аренда {shoot} мин + {buffer} мин пауза"
     price_line = ""
     if booking.quoted_price_rub:
-        prepay = booking.prepay_amount_rub or booking.quoted_price_rub
-        price_line = f"\n💳 {booking.quoted_price_rub} ₽, предоплата {prepay} ₽"
+        price_line = f"\n💳 {booking.quoted_price_rub} ₽ · оплата у мастера"
     status_line = ""
     if booking.status == STATUS_HOLD:
-        until = ""
-        if booking.hold_expires_at:
-            until = f" до {format_slot_local(booking.hold_expires_at, tz)}"
-        status_line = f"\n⏳ Не оплачено{until}"
+        status_line = "\n⏳ Запись ожидает подтверждения"
     elif booking.status == STATUS_PAID:
-        status_line = "\n✅ Оплачено"
+        status_line = "\n✅ Запись подтверждена"
     elif booking.status == "pending":
-        status_line = "\n📨 Заявка, ждёт владельца"
+        status_line = "\n📨 Заявка, ждёт мастера"
     elif booking.status == "declined":
         status_line = "\n❌ Отклонена"
     return (
         f"🏠 <b>{escape(studio.name)}</b>\n"
         f"🎬 {escape(resource.name)}\n"
-        f"🕒 {when}{studio_hour}\n"
+        f"🕒 Визит {visit_at}\n"
+        f"⏱ Длительность {duration} мин\n"
         f"👤 {escape(booking.client_name)}\n"
         f"📞 {escape(booking.client_phone or '—')}"
         f"{price_line}"

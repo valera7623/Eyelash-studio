@@ -720,13 +720,14 @@ async def cb_confirm_hold(callback: CallbackQuery, session: AsyncSession, user: 
         if confirmed is None:
             await callback.answer("Это время уже занято другой бронью", show_alert=True)
             return
-        extra = "\n" + booking_summary(booking, studio, resource) if resource else ""
         if booking.status == STATUS_HOLD:
-            await callback.message.answer("Заявка принята. Клиент должен внести предоплату.")
-            client_text = "Владелец подтвердил заявку. Внесите предоплату, чтобы закрепить слот." + extra
-        else:
-            await callback.message.answer("Заявка подтверждена.")
-            client_text = "✅ Владелец студии подтвердил вашу бронь." + extra
+            booking.status = STATUS_PAID
+            booking.hold_expires_at = None
+            booking.prepay_amount_rub = 0
+            await session.commit()
+        extra = "\n" + booking_summary(booking, studio, resource) if resource else ""
+        await callback.message.answer("Заявка подтверждена.")
+        client_text = "✅ Мастер подтвердил вашу запись. Оплата — у мастера." + extra
         if booking.client_telegram_id != studio.owner_telegram_id:
             try:
                 await bot.send_message(booking.client_telegram_id, client_text)
@@ -735,9 +736,9 @@ async def cb_confirm_hold(callback: CallbackQuery, session: AsyncSession, user: 
         await callback.answer("Подтверждено")
         return
     if not await confirm_hold(session, booking):
-        await callback.answer("Подтвердить можно только заявку или неоплаченный hold", show_alert=True)
+        await callback.answer("Подтвердить можно только заявку или hold", show_alert=True)
         return
-    await callback.message.answer("Бронь подтверждена (без оплаты в боте).")
+    await callback.message.answer("Запись подтверждена.")
     if booking.client_telegram_id != studio.owner_telegram_id:
         extra = ""
         if resource:
@@ -745,7 +746,7 @@ async def cb_confirm_hold(callback: CallbackQuery, session: AsyncSession, user: 
         try:
             await bot.send_message(
                 booking.client_telegram_id,
-                "✅ Владелец студии подтвердил вашу бронь." + extra,
+                "✅ Мастер подтвердил вашу запись. Оплата — у мастера." + extra,
             )
         except Exception:
             pass

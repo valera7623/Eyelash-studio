@@ -87,8 +87,6 @@ def slot_keyboard(
         local: datetime = slot.starts_at.astimezone(tz)
         ts = int(slot.starts_at.timestamp())
         label = local.strftime("%H:%M")
-        if slot.price_rub:
-            label = f"{label} {slot.price_rub}₽"
         builder.button(
             text=label,
             callback_data=f"bk:s:{resource_id}:{ts}:{duration_min}",
