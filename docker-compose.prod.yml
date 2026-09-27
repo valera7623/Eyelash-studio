@@ -1,6 +1,6 @@
-# Production на VPS РФ (тот же хост, что studio-book).
+# Production на VPS РФ.
 # GitHub Actions пушит ghcr.io/valera7623/eyelash-studio и на сервере только pull.
-# Порты не пересекаются со studio-book: HTTP 8089, Redis 6380.
+# HTTP 8089, Redis 6380 (рядом studio-book занимает :8088 / :6379).
 #
 # network_mode: host — polling к api.telegram.org как у хоста.
 name: eyelash-studio

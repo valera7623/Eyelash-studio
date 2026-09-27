@@ -1,4 +1,4 @@
-"""Отмена брони и расчёт возврата предоплаты."""
+"""Отмена записи. Возврат через кассу — только если был legacy-платёж за слот."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ def cancel_rules_text() -> str:
     path = settings.cancel_rules_path
     if path.exists():
         return path.read_text(encoding="utf-8").strip()
-    return "Отмена в боте. Полный возврат, если до слота хватает срока студии."
+    return "Отмена в боте. Оплата визита — у мастера, возврата через кассу платформы нет."
 
 
 def refund_for_cancel(
@@ -92,11 +92,11 @@ async def preview_cancel(
         studio, booking, paid_amount if booking.status == STATUS_PAID else 0, by=by, now=now
     )
     if booking.status == STATUS_HOLD:
-        text = "Слот ещё не оплачен. Отменить hold? Время сразу освободится."
+        text = "Запись ещё не подтверждена. Отменить? Время сразу освободится."
     elif booking.status == STATUS_PENDING:
         text = "Отменить заявку? Владелец её ещё не подтвердил."
-    elif refund_rub <= 0:
-        text = "Отменить бронь? Возврата не будет."
+    elif paid_amount <= 0 or refund_rub <= 0:
+        text = "Отменить запись? Время освободится. Оплата визита через кассу платформы не проходила."
     elif reason == "late_cancel":
         retain = studio.late_cancel_retain_percent or 50
         hours = studio.cancel_free_hours or 72
@@ -105,7 +105,7 @@ async def preview_cancel(
             f"к возврату {refund_rub} ₽. Отменить?"
         )
     else:
-        text = f"Отменить бронь? К возврату {refund_rub} ₽."
+        text = f"Отменить запись? К возврату {refund_rub} ₽."
     return refund_rub, reason, text
 
 
@@ -118,9 +118,9 @@ async def cancel_booking(
     now: datetime | None = None,
 ) -> CancelResult:
     if booking.status == STATUS_CANCELLED:
-        return CancelResult(ok=False, message="Бронь уже отменена.", reason="already")
+        return CancelResult(ok=False, message="Запись уже отменена.", reason="already")
     if booking.status not in (STATUS_HOLD, STATUS_PAID, STATUS_PENDING, "blocked"):
-        return CancelResult(ok=False, message="Эту бронь нельзя отменить.", reason="bad_status")
+        return CancelResult(ok=False, message="Эту запись нельзя отменить.", reason="bad_status")
 
     payment = await paid_slot_payment(session, booking.id)
     paid_amount = payment.amount_rub if payment else int(booking.prepay_amount_rub or 0)
@@ -152,14 +152,14 @@ async def cancel_booking(
     await session.commit()
 
     if booking.status == STATUS_CANCELLED and refund_rub <= 0:
-        text = "Бронь отменена, слот свободен."
+        text = "Запись отменена, время свободно."
     elif reason == "free_cancel" or by == "owner":
-        text = f"Бронь отменена. К возврату {refund_rub} ₽.{remote_note}"
+        text = f"Запись отменена. К возврату {refund_rub} ₽.{remote_note}" if refund_rub else f"Запись отменена.{remote_note}"
     else:
         retain = studio.late_cancel_retain_percent or 50
         hours = studio.cancel_free_hours or 72
         text = (
-            f"Бронь отменена (до слота меньше {hours} ч). "
+            f"Запись отменена (до визита меньше {hours} ч). "
             f"Удержание {retain}%, к возврату {refund_rub} ₽.{remote_note}"
         )
     return CancelResult(ok=True, message=text, refund_rub=refund_rub, reason=reason)

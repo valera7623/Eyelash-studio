@@ -260,6 +260,7 @@ def test_backup_sqlite_valid(tmp_path, monkeypatch):
     dest = backup_sqlite()
     assert dest is not None
     assert dest.exists()
+    assert dest.name.startswith("eyelash-")
     assert "-" in dest.stem
     check = sqlite3.connect(dest)
     assert check.execute("SELECT id FROM t").fetchone()[0] == 1
@@ -361,6 +362,17 @@ def test_ical_token_roundtrip(monkeypatch, tmp_path):
     assert feed_token_ok("demo-studio", token)
     assert not feed_token_ok("demo-studio", "deadbeef")
     assert not feed_token_ok("other", token)
+
+
+def test_ical_prodid_is_lash_book():
+    from src.services.ical import build_calendar
+
+    studio = Studio(slug="x", name="Студия", owner_id=1, owner_telegram_id=1)
+    resource = Resource(studio_id=1, name="Зал", timezone="Europe/Moscow")
+    ics = build_calendar(studio, resource, [])
+    assert "PRODID:-//lash-book//eyelash studio//RU" in ics
+    assert "photo studio" not in ics
+    assert "studio-book" not in ics
 
 
 def test_owner_hold_keyboard_callback():

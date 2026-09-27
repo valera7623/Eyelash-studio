@@ -1,4 +1,4 @@
-"""Настройки бота аренды зала для наращивания ресниц."""
+"""Настройки бота записи к мастеру по наращиванию ресниц."""
 
 from pathlib import Path
 from typing import List
@@ -54,13 +54,13 @@ class Settings(BaseSettings):
     PRODAMUS_SHOP_ID: str = ""
     PRODAMUS_PAYFORM_URL: str = ""
 
-    # ЮKassa: отдельный магазин под studiobook.com.ru, не shopId agentops/gameforge.
+    # ЮKassa: отдельный магазин под eyelash.com.ru, не shopId agentops/gameforge.
     YOOKASSA_SHOP_ID: str = ""
     YOOKASSA_SECRET_KEY: str = ""
     # auto = ЮKassa если ключи есть, иначе Prodamus
     PAYMENT_PROVIDER: str = "auto"
 
-    HTTP_PORT: int = 8088
+    HTTP_PORT: int = 8089
     PUBLIC_BASE_URL: str = ""
 
     # HMAC iCal: не BOT_TOKEN, иначе смена токена ломает подписки календаря.

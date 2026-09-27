@@ -51,7 +51,7 @@ def ical_secret_bytes() -> bytes:
         return token.encode("utf-8")
     except OSError:
         logger.exception("cannot persist ical secret at %s", path)
-        fallback = (settings.BOT_TOKEN or "studio-book").encode("utf-8")
+        fallback = (settings.BOT_TOKEN or "lash-book").encode("utf-8")
         return fallback
 
 
@@ -78,7 +78,7 @@ def feed_url(slug: str, base_url: str) -> str:
 
 
 def booking_to_vevent(booking: Booking, studio: Studio, resource: Resource) -> str:
-    uid = f"booking-{booking.id}@studio-book"
+    uid = f"booking-{booking.id}@lash-book"
     summary = _escape(f"{studio.name}: {resource.name}")
     description = _escape(booking.client_name or "Бронь")
     return "\n".join(
@@ -115,7 +115,7 @@ def build_calendar(
         [
             "BEGIN:VCALENDAR",
             "VERSION:2.0",
-            "PRODID:-//studio-book//photo studio//RU",
+            "PRODID:-//lash-book//eyelash studio//RU",
             "CALSCALE:GREGORIAN",
             f"X-WR-CALNAME:{_escape(studio.name)}",
             *events,

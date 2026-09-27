@@ -7,7 +7,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from src.database.models.studio import Resource
 from src.database.models.window import Window
 from src.services.formatters import format_day_label, format_interval_local
-from src.services.slots import Slot, allowed_durations, quote_price_rub
+from src.services.slots import Slot, VISIT_DURATIONS
 
 
 def profile_keyboard() -> InlineKeyboardMarkup:
@@ -56,20 +56,10 @@ def date_keyboard(resource_id: int, days: list[date], tz_name: str) -> InlineKey
     return builder.as_markup()
 
 
-def duration_keyboard(resource: Resource, day_iso: str, sample_start: datetime) -> InlineKeyboardMarkup:
+def duration_keyboard(resource_id: int, day_iso: str) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    for minutes in allowed_durations(resource):
-        hours = minutes / 60
-        price = quote_price_rub(resource, sample_start, minutes)
-        if hours == int(hours):
-            label = f"{int(hours)} ч"
-        else:
-            label = f"{minutes} мин"
-        if price:
-            label = f"{label} · {price} ₽"
-        if minutes < (resource.min_duration_min or 60):
-            label = f"{label} *"
-        builder.button(text=label, callback_data=f"bk:n:{resource.id}:{day_iso}:{minutes}")
+    for minutes in VISIT_DURATIONS:
+        builder.button(text=f"{minutes} мин", callback_data=f"bk:n:{resource_id}:{day_iso}:{minutes}")
     builder.button(text="↩️ Другая дата", callback_data="bk:back")
     builder.adjust(2)
     return builder.as_markup()
@@ -108,23 +98,14 @@ def pay_keyboard(url: str, booking_id: int | None = None) -> InlineKeyboardMarku
     builder = InlineKeyboardBuilder()
     builder.button(text="💳 Оплатить", url=url)
     if booking_id:
-        builder.button(text="❌ Отменить бронь", callback_data=f"bk:cx:{booking_id}")
+        builder.button(text="❌ Отменить запись", callback_data=f"bk:cx:{booking_id}")
     builder.adjust(1)
     return builder.as_markup()
 
 
-def client_booking_keyboard(
-    booking_id: int,
-    *,
-    can_pay: bool = False,
-    pay_url: str | None = None,
-) -> InlineKeyboardMarkup:
+def client_booking_keyboard(booking_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    if pay_url:
-        builder.button(text="💳 Оплатить", url=pay_url)
-    elif can_pay:
-        builder.button(text="💳 Оплатить", callback_data=f"bk:pay:{booking_id}")
-    builder.button(text="❌ Отменить бронь", callback_data=f"bk:cx:{booking_id}")
+    builder.button(text="❌ Отменить запись", callback_data=f"bk:cx:{booking_id}")
     builder.adjust(1)
     return builder.as_markup()
 

@@ -146,7 +146,7 @@ async def paid_subscribers_messages(session: AsyncSession, now=None) -> list[str
     studios = await list_active_paid_studios(session, now=now)
     header = paid_subscribers_header(len(studios))
     if not studios:
-        return [header + "\n\nНет активных Старт / Плюс."]
+        return [header + "\n\nНет активных подписок Старт."]
     lines = [format_paid_subscriber_line(studio) for studio in studios]
     return _chunk_messages(header + "\n", lines)
 

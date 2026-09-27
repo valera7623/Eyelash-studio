@@ -1,52 +1,52 @@
-# Install: copy to /home/valera/traefik/dynamic/studiobook.yml
-# Traefik :80/:443 -> host :8088 via agentops-edge gateway 172.19.0.1
-# www has DNS now — include it so phones that auto-open www. work.
+# Install: copy to /home/valera/traefik/dynamic/eyelash.yml
+# Traefik :80/:443 -> host :8089 (eyelash-studio bot; studio-book occupies :8088)
+# www has DNS — include it so phones that auto-open www. work.
 
 http:
   routers:
-    studiobook:
-      rule: "Host(`studiobook.com.ru`)"
+    eyelash:
+      rule: "Host(`eyelash.com.ru`)"
       priority: 1
       entryPoints:
         - websecure
-      service: studiobook
+      service: eyelash
       tls:
         certResolver: letsencrypt
 
-    studiobook-www:
-      rule: "Host(`www.studiobook.com.ru`)"
+    eyelash-www:
+      rule: "Host(`www.eyelash.com.ru`)"
       priority: 1
       entryPoints:
         - websecure
-      service: studiobook
+      service: eyelash
       tls:
         certResolver: letsencrypt
       middlewares:
-        - studiobook-redirect-apex
+        - eyelash-redirect-apex
 
-    studiobook-http:
-      rule: "Host(`studiobook.com.ru`) || Host(`www.studiobook.com.ru`)"
+    eyelash-http:
+      rule: "Host(`eyelash.com.ru`) || Host(`www.eyelash.com.ru`)"
       entryPoints:
         - web
-      service: studiobook
+      service: eyelash
       middlewares:
-        - studiobook-redirect-https
+        - eyelash-redirect-https
 
   services:
-    studiobook:
+    eyelash:
       loadBalancer:
         servers:
-          - url: "http://172.19.0.1:8088"
+          - url: "http://172.19.0.1:8089"
 
   middlewares:
-    studiobook-redirect-https:
+    eyelash-redirect-https:
       redirectScheme:
         scheme: https
         port: "443"
         permanent: true
 
-    studiobook-redirect-apex:
+    eyelash-redirect-apex:
       redirectRegex:
-        regex: "^https://www\\.studiobook\\.com\\.ru/(.*)"
-        replacement: "https://studiobook.com.ru/${1}"
+        regex: "^https://www\\.eyelash\\.com\\.ru/(.*)"
+        replacement: "https://eyelash.com.ru/${1}"
         permanent: true

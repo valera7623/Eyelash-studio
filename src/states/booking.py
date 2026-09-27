@@ -14,6 +14,7 @@ class OwnerStates(StatesGroup):
 
 
 class BookingStates(StatesGroup):
+    waiting_duration = State()
     waiting_time = State()
     waiting_name = State()
     waiting_phone = State()

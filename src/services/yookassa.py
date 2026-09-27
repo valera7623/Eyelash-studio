@@ -85,7 +85,7 @@ async def create_payment(
     if not is_configured():
         raise RuntimeError("YooKassa is not configured")
     root = settings.PUBLIC_BASE_URL.rstrip("/") if settings.PUBLIC_BASE_URL.strip() else ""
-    return_url = (root + "/pay/success") if root else "https://studiobook.com.ru/pay/success"
+    return_url = (root + "/pay/success") if root else "https://eyelash.com.ru/pay/success"
     payload = build_payment_payload(
         order_id=order_id,
         amount_rub=amount_rub,

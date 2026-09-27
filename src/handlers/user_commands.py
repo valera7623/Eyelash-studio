@@ -46,7 +46,7 @@ async def cmd_help(message: Message, user, session: AsyncSession):
         "/start — начало",
         "/help — эта справка",
         "/studio — кабинет владельца (создать студию, окна, заявки)",
-        "/my — мои брони (клиент: отмена и оплата hold)",
+        "/my — мои записи (клиент: отмена)",
         "/rules — шаблон правил отмены",
         "/profile — профиль Telegram",
     ]

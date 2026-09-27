@@ -299,7 +299,7 @@ def test_payment_url_has_no_query_signature(monkeypatch):
     from src.services import prodamus as prodamus_mod
 
     monkeypatch.setattr(prodamus_mod.settings, "PRODAMUS_PAYFORM_URL", "https://demo.payform.ru")
-    monkeypatch.setattr(prodamus_mod.settings, "PUBLIC_BASE_URL", "https://studiobook.com.ru")
+    monkeypatch.setattr(prodamus_mod.settings, "PUBLIC_BASE_URL", "https://eyelash.com.ru")
     url = prodamus_mod.build_payment_url(
         order_id="slot-1-2",
         amount_rub=100,
@@ -330,7 +330,7 @@ def test_yookassa_payload_and_succeeded_event():
         order_id="slot-1-2",
         amount_rub=490,
         description="Старт",
-        return_url="https://studiobook.com.ru/pay/success",
+        return_url="https://eyelash.com.ru/pay/success",
         extra={"kind": "slot_prepay"},
     )
     assert payload["amount"]["value"] == "490.00"
@@ -674,3 +674,61 @@ async def test_request_outside_window_then_one_confirm(session):
     assert confirmed.status in {STATUS_HOLD, STATUS_PAID}
     blocked = await confirm_request(session, second)
     assert blocked is None
+
+
+def test_visit_duration_keyboard_has_no_price():
+    from src.keyboards.inline import duration_keyboard
+    from src.services.slots import VISIT_DURATIONS
+
+    assert VISIT_DURATIONS == (60, 90, 120)
+    markup = duration_keyboard(3, "2026-10-01")
+    texts = [btn.text for row in markup.inline_keyboard for btn in row]
+    datas = [btn.callback_data for row in markup.inline_keyboard for btn in row]
+    assert "60 мин" in texts
+    assert "90 мин" in texts
+    assert "120 мин" in texts
+    assert not any("₽" in (t or "") for t in texts)
+    assert "bk:n:3:2026-10-01:90" in datas
+
+
+def test_slot_keyboard_keeps_chosen_duration():
+    from src.keyboards.inline import slot_keyboard
+    from src.services.slots import Slot
+
+    start = datetime(2026, 10, 1, 9, 0, tzinfo=timezone.utc)
+    slots = [Slot(starts_at=start, ends_at=start + timedelta(minutes=90), price_rub=0)]
+    markup = slot_keyboard(5, slots, "Europe/Moscow", 90)
+    datas = [btn.callback_data for row in markup.inline_keyboard for btn in row]
+    assert any(item and item.endswith(":90") and item.startswith("bk:s:5:") for item in datas)
+
+
+def test_client_keyboard_has_no_pay():
+    from src.keyboards.inline import client_booking_keyboard
+
+    markup = client_booking_keyboard(11)
+    datas = [btn.callback_data for row in markup.inline_keyboard for btn in row]
+    texts = [btn.text for row in markup.inline_keyboard for btn in row]
+    assert "bk:cx:11" in datas
+    assert not any(item and "bk:pay" in item for item in datas)
+    assert not any("Оплатить" in (t or "") for t in texts)
+
+
+async def test_chosen_visit_duration_sets_ends_at(session):
+    resource = await _seed_resource(session, slug="dur-studio", telegram_id=9301)
+    start = datetime.now(timezone.utc) + timedelta(days=3)
+    booking = await create_request(
+        session,
+        resource=resource,
+        starts_at=start,
+        ends_at=start + timedelta(minutes=90),
+        client_telegram_id=1,
+        client_name="Анна",
+        client_phone="+79990000000",
+        client_user_id=None,
+        quoted_price_rub=0,
+        prepay_amount_rub=0,
+    )
+    assert booking is not None
+    duration = int((booking.ends_at - booking.starts_at).total_seconds() // 60)
+    assert duration == 90
+    assert booking.quoted_price_rub == 0

@@ -9,7 +9,7 @@
 #   BOT_TOKEN      — токен @eyelashstudiobot (первый .env на VPS, потом не перезаписывается)
 #
 # Образ: ghcr.io/valera7623/eyelash-studio
-# На этом VPS уже studio-book :8088 / Redis :6379 — здесь :8089 / :6380.
+# На этом VPS рядом studio-book :8088 / Redis :6379 — здесь :8089 / :6380.
 
 name: Deploy eyelash-studio to VPS
 
@@ -97,6 +97,16 @@ jobs:
           source: docker-compose.prod.yml
           target: ${{ env.DEPLOY_DIR }}/
 
+      - name: Copy Traefik eyelash.yml to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || '22' }}
+          source: deploy/traefik.yml
+          target: ${{ env.DEPLOY_DIR }}/
+
       - name: Pull image and restart
         uses: appleboy/ssh-action@v1.2.0
         env:
@@ -132,8 +142,21 @@ jobs:
                 printf 'USE_REDIS=true\n'
                 printf 'REDIS_URL=redis://127.0.0.1:6380/0\n'
                 printf 'SQLITE_PATH=/app/data/eyelash.db\n'
+                printf 'PUBLIC_BASE_URL=https://eyelash.com.ru\n'
               } > .env
               chmod 600 .env
+            fi
+            if ! grep -q '^PUBLIC_BASE_URL=' .env; then
+              printf '\nPUBLIC_BASE_URL=https://eyelash.com.ru\n' >> .env
+            fi
+            mkdir -p "$DEPLOY_DIR/data/backups"
+            chmod u+rwX "$DEPLOY_DIR/data" 2>/dev/null || true
+            if [ -f "$DEPLOY_DIR/data/eyelash.db" ]; then
+              chmod u+rw "$DEPLOY_DIR/data/eyelash.db" 2>/dev/null || true
+            fi
+            mkdir -p /home/valera/traefik/dynamic
+            if [ -f "$DEPLOY_DIR/deploy/traefik.yml" ]; then
+              cp -f "$DEPLOY_DIR/deploy/traefik.yml" /home/valera/traefik/dynamic/eyelash.yml || true
             fi
             if grep -q '^DOCKER_IMAGE=' .env; then
               sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=${IMAGE}|" .env

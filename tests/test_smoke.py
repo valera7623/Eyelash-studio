@@ -37,7 +37,7 @@ async def test_start_answers_welcome(session):
     state.clear.assert_awaited()
     message.answer.assert_awaited()
     text = message.answer.await_args.args[0]
-    assert "аренды зала" in text or "наращивания ресниц" in text
+    assert "наращиван" in text
     assert "парол" not in text.lower()
 
 
@@ -50,7 +50,7 @@ async def test_help_hides_owner_sheet_for_clients(session):
     message = AsyncMock()
     await cmd_help(message, user, session)
     text = message.answer.await_args.args[0]
-    assert "/my" in text
+    assert "оплата hold" not in text
     assert "Шпаргалка владельца" not in text
 
 
@@ -79,7 +79,9 @@ def test_landing_lists_service_prices():
     html = (Path(__file__).resolve().parents[1] / "landing" / "index.html").read_text(encoding="utf-8")
     assert "Стоимость услуг" in html
     assert "{{TARIFF_STARTER_RUB}}" in html
-    assert "2&nbsp;000" in html
+    assert "2&nbsp;000" not in html
+    assert "Предоплата аренды" not in html
+    assert "оплачивает работу мастеру" in html
     assert "id=\"prices\"" in html
     assert "Lash-book" in html
     assert "фотозал" not in html
@@ -102,8 +104,9 @@ async def test_landing_http_substitutes_tariffs(engine):
         assert "фотограф" not in text
         assert "Lash-book" in text
         assert "наращивания ресниц" in text
-        assert "2\xa0000" in text or "2&nbsp;000" in text
+        assert "2\xa0000" not in text and "2&nbsp;000" not in text
         assert "Стоимость услуг" in text
+        assert "оплачивает работу мастеру" in text
         assert "220910861433" in text
         from src.config import settings
         from src.web.app import DEFAULT_BOT_USERNAME
@@ -206,13 +209,17 @@ def test_go_live_runbook_has_webhook():
 
     root = Path(__file__).resolve().parents[1]
     go_live = (root / "docs" / "go_live.md").read_text(encoding="utf-8")
-    assert "https://studiobook.com.ru/prodamus/webhook" in go_live
-    assert "https://studiobook.com.ru/yookassa/webhook" in go_live
+    assert "https://eyelash.com.ru/prodamus/webhook" in go_live
+    assert "https://eyelash.com.ru/yookassa/webhook" in go_live
     assert "data/backups/" in go_live
-    assert "studio_book.before-restore.db" in go_live
+    assert "eyelash.before-restore.db" in go_live
     owner = (root / "src" / "handlers" / "owner.py").read_text(encoding="utf-8")
     assert "ow:guide" in owner
     assert "ow:win" in owner
+    yoo = (root / "src" / "services" / "yookassa.py").read_text(encoding="utf-8")
+    assert "https://eyelash.com.ru/pay/success" in yoo
+    cfg = (root / "src" / "config.py").read_text(encoding="utf-8")
+    assert "HTTP_PORT: int = 8089" in cfg
 
 
 def test_landing_render_uses_studio_book_username(tmp_path):

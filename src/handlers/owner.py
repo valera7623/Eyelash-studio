@@ -237,6 +237,8 @@ async def cb_link(callback: CallbackQuery, session: AsyncSession, user: User, bo
     await callback.answer()
 
 
+# Legacy-кнопки (iCal, правила предоплаты, блоки, слоты, тексты, доп. залы, сетка цен, список броней)
+# в кабинете соло-мастера не показываются; handlers оставлены для старых сообщений.
 @router.callback_query(F.data == "ow:txt")
 async def cb_texts(callback: CallbackQuery, session: AsyncSession, user: User, bot: Bot):
     studio = await get_owner_studio(session, user)
@@ -895,7 +897,7 @@ async def cb_pay_tariff(callback: CallbackQuery, session: AsyncSession, user: Us
         url = await payment_svc.create_checkout_url(
             session,
             payment,
-            description=f"Подписка studio-book {tariff} {studio.slug}",
+            description=f"Подписка Lash-book {tariff} {studio.slug}",
         )
     except Exception:
         await callback.message.answer("Не удалось открыть оплату. Попробуйте ещё раз чуть позже.")
