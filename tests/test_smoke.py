@@ -85,6 +85,8 @@ def test_landing_lists_service_prices():
     assert "id=\"prices\"" in html
     assert "Lash-book" in html
     assert "фотозал" not in html
+    assert "длительность визита" not in html
+    assert "Сколько займёт" not in html
 
 
 async def test_landing_http_substitutes_tariffs(engine):

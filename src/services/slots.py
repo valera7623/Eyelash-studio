@@ -174,10 +174,6 @@ def allowed_durations(resource: Resource) -> list[int]:
     return durations or [60]
 
 
-# Длительность визита выбирает клиент; из этого складывается интервал записи.
-VISIT_DURATIONS = (60, 90, 120)
-
-
 def _is_night_local(local: datetime, resource: Resource) -> bool:
     night_start = resource.night_start or time(22, 0)
     clock = local.time()

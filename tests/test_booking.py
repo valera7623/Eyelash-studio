@@ -676,30 +676,16 @@ async def test_request_outside_window_then_one_confirm(session):
     assert blocked is None
 
 
-def test_visit_duration_keyboard_has_no_price():
-    from src.keyboards.inline import duration_keyboard
-    from src.services.slots import VISIT_DURATIONS
-
-    assert VISIT_DURATIONS == (60, 90, 120)
-    markup = duration_keyboard(3, "2026-10-01")
-    texts = [btn.text for row in markup.inline_keyboard for btn in row]
-    datas = [btn.callback_data for row in markup.inline_keyboard for btn in row]
-    assert "60 мин" in texts
-    assert "90 мин" in texts
-    assert "120 мин" in texts
-    assert not any("₽" in (t or "") for t in texts)
-    assert "bk:n:3:2026-10-01:90" in datas
-
-
-def test_slot_keyboard_keeps_chosen_duration():
+def test_slot_keyboard_is_start_time_only():
     from src.keyboards.inline import slot_keyboard
     from src.services.slots import Slot
 
     start = datetime(2026, 10, 1, 9, 0, tzinfo=timezone.utc)
-    slots = [Slot(starts_at=start, ends_at=start + timedelta(minutes=90), price_rub=0)]
-    markup = slot_keyboard(5, slots, "Europe/Moscow", 90)
+    slots = [Slot(starts_at=start, ends_at=start + timedelta(minutes=60), price_rub=0)]
+    markup = slot_keyboard(5, slots, "Europe/Moscow")
     datas = [btn.callback_data for row in markup.inline_keyboard for btn in row]
-    assert any(item and item.endswith(":90") and item.startswith("bk:s:5:") for item in datas)
+    assert any(item and item.startswith("bk:s:5:") and item.count(":") == 3 for item in datas)
+    assert not any(item and item.startswith("bk:n:") for item in datas)
 
 
 def test_client_keyboard_has_no_pay():
@@ -713,7 +699,7 @@ def test_client_keyboard_has_no_pay():
     assert not any("Оплатить" in (t or "") for t in texts)
 
 
-async def test_chosen_visit_duration_sets_ends_at(session):
+async def test_request_quoted_price_zero(session):
     resource = await _seed_resource(session, slug="dur-studio", telegram_id=9301)
     start = datetime.now(timezone.utc) + timedelta(days=3)
     booking = await create_request(
@@ -729,6 +715,4 @@ async def test_chosen_visit_duration_sets_ends_at(session):
         prepay_amount_rub=0,
     )
     assert booking is not None
-    duration = int((booking.ends_at - booking.starts_at).total_seconds() // 60)
-    assert duration == 90
     assert booking.quoted_price_rub == 0

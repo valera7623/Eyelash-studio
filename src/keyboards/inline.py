@@ -7,7 +7,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from src.database.models.studio import Resource
 from src.database.models.window import Window
 from src.services.formatters import format_day_label, format_interval_local
-from src.services.slots import Slot, VISIT_DURATIONS
+from src.services.slots import Slot
 
 
 def profile_keyboard() -> InlineKeyboardMarkup:
@@ -56,20 +56,10 @@ def date_keyboard(resource_id: int, days: list[date], tz_name: str) -> InlineKey
     return builder.as_markup()
 
 
-def duration_keyboard(resource_id: int, day_iso: str) -> InlineKeyboardMarkup:
-    builder = InlineKeyboardBuilder()
-    for minutes in VISIT_DURATIONS:
-        builder.button(text=f"{minutes} мин", callback_data=f"bk:n:{resource_id}:{day_iso}:{minutes}")
-    builder.button(text="↩️ Другая дата", callback_data="bk:back")
-    builder.adjust(2)
-    return builder.as_markup()
-
-
 def slot_keyboard(
     resource_id: int,
     slots: list[Slot],
     tz_name: str,
-    duration_min: int,
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     tz = ZoneInfo(tz_name)
@@ -79,7 +69,7 @@ def slot_keyboard(
         label = local.strftime("%H:%M")
         builder.button(
             text=label,
-            callback_data=f"bk:s:{resource_id}:{ts}:{duration_min}",
+            callback_data=f"bk:s:{resource_id}:{ts}",
         )
     builder.button(text="↩️ Другая дата", callback_data="bk:back")
     builder.adjust(3)

@@ -233,7 +233,7 @@ def test_booking_summary_hold_status():
     assert "Запись подтверждена" in paid
     assert "Оплачено" not in paid
     assert "Визит" in paid
-    assert "Длительность" in paid
+    assert "Длительность" not in paid
 
 
 def test_redact_phone():

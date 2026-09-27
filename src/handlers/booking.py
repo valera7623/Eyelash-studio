@@ -24,7 +24,6 @@ from src.keyboards.inline import (
     confirm_cancel_keyboard,
     consent_keyboard,
     date_keyboard,
-    duration_keyboard,
     owner_hold_keyboard,
     owner_request_keyboard,
     resource_keyboard,
@@ -40,7 +39,6 @@ from src.services.slots import (
     create_hold,
     create_request,
     parse_hhmm,
-    VISIT_DURATIONS,
 )
 from src.services.studios import get_studio_by_slug, list_active_resources
 from src.services.tariffs import can_create_booking
@@ -73,7 +71,7 @@ async def _ask_dates(message: Message, studio: Studio, resource: Resource, *, ed
     await _set_message(
         message,
         f"📅 <b>{studio.name}</b>\nЗал: {resource.name}\n"
-        "Выберите дату. Если окна нет — напишите своё время заявкой после выбора длительности визита.",
+        "Выберите дату. Если окна нет — напишите своё время заявкой.",
         date_keyboard(resource.id, _days_ahead(tz_name), tz_name),
         edit=edit,
     )
@@ -140,14 +138,13 @@ async def cb_pick_date(callback: CallbackQuery, session: AsyncSession, state: FS
         resource_id=resource.id,
         day=day_s,
     )
-    await state.set_state(BookingStates.waiting_duration)
-    await _set_message(
-        callback.message,
-        f"Сколько займёт визит {day.strftime('%d.%m.%Y')}?",
-        duration_keyboard(resource.id, day_s),
-        edit=True,
-    )
+    await _show_slots(callback.message, session, state, resource, day, edit=True)
     await callback.answer()
+
+
+def _occupancy_min(resource: Resource) -> int:
+    """Технический интервал занятости зала, не показывается клиенту."""
+    return int(resource.duration_min or 60)
 
 
 async def _show_slots(
@@ -156,10 +153,10 @@ async def _show_slots(
     state: FSMContext,
     resource: Resource,
     day,
-    duration_min: int,
     *,
     edit: bool = False,
 ) -> None:
+    duration_min = _occupancy_min(resource)
     slots = await available_slots(session, resource, day, duration_min)
     await state.update_data(
         resource_id=resource.id,
@@ -170,14 +167,13 @@ async def _show_slots(
     await state.set_state(BookingStates.waiting_time)
     if slots:
         text = (
-            f"Время визита на {day.strftime('%d.%m.%Y')} "
-            f"(длительность визита {duration_min} мин).\n"
+            f"Время визита на {day.strftime('%d.%m.%Y')}.\n"
             "Нажмите время или напишите своё, например 19:30 — вне окна это будет заявка."
         )
         await _set_message(
             message,
             text,
-            slot_keyboard(resource.id, slots, resource.timezone, duration_min),
+            slot_keyboard(resource.id, slots, resource.timezone),
             edit=edit,
         )
         return
@@ -191,27 +187,19 @@ async def _show_slots(
 
 @router.callback_query(F.data.startswith("bk:n:"))
 async def cb_pick_duration(callback: CallbackQuery, session: AsyncSession, state: FSMContext):
-    _, _, resource_id_s, day_s, dur_s = callback.data.split(":")
+    """Старые кнопки длительности: сразу к выбору времени, без вопроса про визит."""
+    _, _, resource_id_s, day_s, _dur_s = callback.data.split(":")
     resource = await session.get(Resource, int(resource_id_s))
     if resource is None:
         await callback.answer("Слот недоступен", show_alert=True)
-        return
-    try:
-        duration_min = int(dur_s)
-    except ValueError:
-        await callback.answer("Некорректная длительность", show_alert=True)
-        return
-    if duration_min not in VISIT_DURATIONS:
-        await callback.answer("Выберите длительность из списка", show_alert=True)
         return
     day = date.fromisoformat(day_s)
     await state.update_data(
         resource_id=resource.id,
         studio_id=resource.studio_id,
         day=day_s,
-        duration_min=duration_min,
     )
-    await _show_slots(callback.message, session, state, resource, day, duration_min, edit=True)
+    await _show_slots(callback.message, session, state, resource, day, edit=True)
     await callback.answer()
 
 
@@ -227,11 +215,6 @@ async def cb_back_dates(callback: CallbackQuery, session: AsyncSession, state: F
     await callback.answer()
 
 
-@router.message(BookingStates.waiting_duration, _NOT_COMMAND)
-async def booking_duration_text(message: Message):
-    await message.answer("Выберите, сколько займёт визит — кнопкой 60, 90 или 120 мин.")
-
-
 @router.callback_query(F.data.startswith("bk:s:"))
 async def cb_pick_slot(callback: CallbackQuery, session: AsyncSession, state: FSMContext):
     parts = callback.data.split(":")
@@ -240,17 +223,7 @@ async def cb_pick_slot(callback: CallbackQuery, session: AsyncSession, state: FS
     if resource is None:
         await callback.answer("Слот недоступен", show_alert=True)
         return
-    data = await state.get_data()
-    if len(parts) > 4:
-        try:
-            duration_min = int(parts[4])
-        except ValueError:
-            duration_min = 0
-    else:
-        duration_min = int(data.get("duration_min") or 0)
-    if duration_min not in VISIT_DURATIONS:
-        await callback.answer("Сначала выберите, сколько займёт визит", show_alert=True)
-        return
+    duration_min = _occupancy_min(resource)
     starts_at = datetime.fromtimestamp(int(ts_s), tz=timezone.utc)
     await state.update_data(
         resource_id=resource.id,
@@ -276,7 +249,7 @@ async def cb_pick_slot(callback: CallbackQuery, session: AsyncSession, state: FS
     await state.set_state(BookingStates.waiting_name)
     await _set_message(
         callback.message,
-        f"Визит {when}, {duration_min} мин. {hint}\nКак вас зовут?",
+        f"Визит {when}. {hint}\nКак вас зовут?",
         edit=True,
     )
     await callback.answer()
@@ -291,10 +264,7 @@ async def booking_time_text(message: Message, session: AsyncSession, state: FSMC
         await message.answer("Напишите время как 14:30 или выберите кнопку.")
         return
     day = date.fromisoformat(data["day"])
-    duration_min = int(data.get("duration_min") or 0)
-    if duration_min not in VISIT_DURATIONS:
-        await message.answer("Сначала выберите, сколько займёт визит — кнопкой выше.")
-        return
+    duration_min = _occupancy_min(resource)
     starts_at = combine_local(day, clock, ZoneInfo(resource.timezone or "Europe/Moscow"))
     ends_at = starts_at + timedelta(minutes=duration_min)
     kind = await classify_interval(session, resource, starts_at, ends_at)
@@ -317,7 +287,7 @@ async def booking_time_text(message: Message, session: AsyncSession, state: FSMC
         else "Окна нет — заявка уйдёт мастеру."
     )
     await state.set_state(BookingStates.waiting_name)
-    await message.answer(f"Визит {when}, {duration_min} мин. {hint}\nКак вас зовут?")
+    await message.answer(f"Визит {when}. {hint}\nКак вас зовут?")
 
 
 @router.message(BookingStates.waiting_name, _NOT_COMMAND)
@@ -371,9 +341,7 @@ async def cb_consent(
         await callback.answer()
         return
     starts_at = datetime.fromtimestamp(int(data["starts_ts"]), tz=timezone.utc)
-    duration_min = int(data.get("duration_min") or 0)
-    if duration_min not in VISIT_DURATIONS:
-        duration_min = int(resource.duration_min or 60)
+    duration_min = _occupancy_min(resource)
     ends_at = starts_at + timedelta(minutes=duration_min)
     price = 0
     await record_consent(session, user, studio_id=studio.id)

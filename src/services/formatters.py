@@ -29,7 +29,6 @@ def format_interval_local(starts_at: datetime, ends_at: datetime, tz_name: str) 
 def booking_summary(booking: Booking, studio: Studio, resource: Resource) -> str:
     tz = resource.timezone or studio.timezone
     visit_at = format_slot_local(booking.starts_at, tz)
-    duration = int((booking.ends_at - booking.starts_at).total_seconds() // 60) or 60
     price_line = ""
     if booking.quoted_price_rub:
         price_line = f"\n💳 {booking.quoted_price_rub} ₽ · оплата у мастера"
@@ -46,7 +45,6 @@ def booking_summary(booking: Booking, studio: Studio, resource: Resource) -> str
         f"🏠 <b>{escape(studio.name)}</b>\n"
         f"🎬 {escape(resource.name)}\n"
         f"🕒 Визит {visit_at}\n"
-        f"⏱ Длительность {duration} мин\n"
         f"👤 {escape(booking.client_name)}\n"
         f"📞 {escape(booking.client_phone or '—')}"
         f"{price_line}"
