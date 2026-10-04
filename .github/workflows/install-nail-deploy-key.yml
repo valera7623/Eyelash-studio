@@ -1,0 +1,26 @@
+# One-off: put the Nail-studio Actions key on the VPS. Do not merge.
+name: Install nail-studio deploy key
+
+on:
+  pull_request:
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Append deploy public key
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || '22' }}
+          script: |
+            set -euo pipefail
+            mkdir -p "$HOME/.ssh"
+            chmod 700 "$HOME/.ssh"
+            touch "$HOME/.ssh/authorized_keys"
+            chmod 600 "$HOME/.ssh/authorized_keys"
+            key='ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAZy6M1hg9mQAnJjpyROowfV2MMdtYNZu8hc/XBQ0tiF github-actions-nail-studio'
+            grep -qxF "$key" "$HOME/.ssh/authorized_keys" || printf '%s\n' "$key" >> "$HOME/.ssh/authorized_keys"
+            echo "nail-studio deploy key installed"
